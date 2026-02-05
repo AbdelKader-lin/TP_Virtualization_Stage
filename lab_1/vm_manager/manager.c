@@ -9,9 +9,18 @@ int slot_id = 0;
  * TODO
  * This Function Creates Virtual Machine File Descriptor.
  */
-int create_vm(void)
-{
-    int ret = -1;
+int create_vm( void ) {
+    int ret = 0;
+
+    int kvmfd = open( "/dev/kvm" , O_RDWR ) ; // obtains a handle to the kvm subsystem
+    if ( kvmfd < 0 ) { // Error in the open function
+        printf("Error in initial file open.\n") ;
+        return -1 ;
+    }
+    vmfd = ioctl( kvmfd , KVM_CREATE_VM ) ; // Create the VM
+    if ( vmfd < 0 ){
+        ret = -1 ;
+    }
     return ret;
 }
 
@@ -20,10 +29,9 @@ int create_vm(void)
  * This Function Creates Guest Physical Memory Based On Host Virtual Memory
  * And Submits The Memory Area To KVM.
  */
-int create_guest_physical_memory(size_t size)
-{
-    int ret = -1;
-    return ret;
+int create_guest_physical_memory( size_t size ) {
+    int ret = -1 ;
+    return ret ;
 }
 
 int create_bootstrap()
