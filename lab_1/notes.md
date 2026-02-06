@@ -56,11 +56,7 @@ communicate with device drivers and special files.
             Returns: size of vcpu mmap area, in bytes
 
         2- KVM_SET_USER_MEMORY_REGION :
-            This ioctl allows the user to create, modify or delete a guest physical
-            memory slot.  Bits 0-15 of "slot" specify the slot id and this value
-            should be less than the maximum number of user memory slots supported per
-            VM.  The maximum allowed slots can be queried using KVM_CAP_NR_MEMSLOTS.
-            Slots may not overlap in guest physical address space.
+            This ioctl allows the user to create, modify or delete a guest physical memory slot. Bits 0-15 of "slot" specify the slot id and this value should be less than the maximum number of user memory slots supported per VM. The maximum allowed slots can be queried using KVM_CAP_NR_MEMSLOTS. Slots may not overlap in guest physical address space.
 
             If KVM_CAP_MULTI_ADDRESS_SPACE is available, bits 16-31 of "slot"
             specifies the address space which is being modified
