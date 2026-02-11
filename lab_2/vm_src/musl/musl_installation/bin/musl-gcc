@@ -1,0 +1,2 @@
+#!/bin/sh
+exec "${REALGCC:-gcc}" "$@" -specs "/home/abdel-kader/Desktop/Stage/Github_TP_Virtualization_Stage/lab_2/vm_src/musl/musl_installation/lib/musl-gcc.specs"
