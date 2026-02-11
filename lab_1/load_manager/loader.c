@@ -15,7 +15,8 @@ int load_vm_code( const uint8_t *code ) {
     int codeSize = 12 ;
 
     for ( int i = 0 ; i < codeSize ; i++ ){ // On copie octet par octet
-        *( mem + 0x1000 + i ) = *( code + i ) ;
+        //*( mem + 0x1000 + i ) = *( code + i ) ;
+        *( mem  + i ) = *( code + i ) ;
     }
     return 0 ;
 }

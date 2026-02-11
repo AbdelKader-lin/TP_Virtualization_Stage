@@ -41,7 +41,7 @@ int create_guest_physical_memory( size_t size ) {
     //      The length argument specifies the length of the mapping (which must be greater than 0).
     
     // NULL : The kernel chooses the (page-aligned) address at which to create the mapping
-    void* hva = mmap( NULL , size , PROT_READ | PROT_WRITE , MAP_SHARED , -1 , 0 ) ;
+    void* hva = mmap( NULL , size , PROT_READ | PROT_WRITE , MAP_ANONYMOUS | MAP_PRIVATE , -1 , 0 ) ;
     if ( hva == MAP_FAILED ){ // Error check
         ret = -1 ;
     }
@@ -51,7 +51,7 @@ int create_guest_physical_memory( size_t size ) {
     struct kvm_userspace_memory_region gpa ;
     gpa.memory_size = size ;
     gpa.slot = slot_id ;
-    gpa.userspace_addr = hva ;
+    gpa.userspace_addr = (uint64_t)hva ;
     gpa.guest_phys_addr = 0 ;
     gpa.flags = 0 ;
     ret = ioctl ( vmfd , KVM_SET_USER_MEMORY_REGION , &gpa ) ;
@@ -109,9 +109,13 @@ int launch_vm(){
 
     /* Update Of The vCPU Registers - RAX, RBX and RIP */
     regs.rflags = 2;
-    regs.rax = 0 ; // Accumulator register (AX).
-    regs.rbx = 0 ; // Base register (BX) : Used as a pointer to data (located in segment register DS, when in segmented mode).
-    regs.rip = 0 ; // Index Pointer : Holds the offset of the next instruction
+    regs.rax = 4 ; // Accumulator register (AX).
+    regs.rbx = 2 ; // Base register (BX) : Used as a pointer to data (located in segment register DS, when in segmented mode).
+
+    /*  We can use 0x1000 because the first page sometimes is reserved / used for other stuff (like vectors, structures, etc.), 
+        but not always. We should then change the for loop in the code that loads the VM.
+    */
+    regs.rip = 0 ; // 0x1000 ; // Index Pointer : Holds the offset of the next instruction (code is loaded at 0x0000)
 
     ret = ioctl(vcpufd, KVM_SET_REGS, &regs);
     if (ret == -1)
