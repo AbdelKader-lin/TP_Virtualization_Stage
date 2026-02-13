@@ -12,7 +12,7 @@ _start:
 	mov eax, cr0
 	or al, 1
 	mov cr0, eax	; enabling protected mode
-	jmp 0x8:main32	; far jump to update the CS register
+	jmp 0x8:main32	; far jump to update the CS register : Enter 32 - bit mode
 
 ; 32bits Protected Mode
 [bits 32]
@@ -20,17 +20,24 @@ _start:
 main32:
 
 	; Enabling Physical Address Extension
+	; PAE allows the CPU to use extended page tables
+	; and eventually access more than 4GB of memory.
 	mov eax, cr4
   	or eax, 0x20
   	mov cr4, eax
 
-	; Enabling long mode and the NX bit
+	; Enabling long mode ( LME ) and the NX bit
+	; LME allows the CPU to enter 64-bit mode.
+	; NX bit : Prevents execution of code from 
+	; 		specific memory pages ( Sec. feature )
   	mov ecx, 0xC0000080
   	rdmsr
   	or eax, (0x100 | 0x800)
   	wrmsr
 
   	; Set cr3 to a pointer to Page Table Root
+	; cr3 has the ph @ of the top-lev page tables
+	; used for mem translation.
   	mov eax, 0x1000
   	mov cr3, eax
 
@@ -39,6 +46,7 @@ main32:
   	or eax, 0x80000000
   	mov cr0, eax
 
+	; Now, we want to enter long mode
 	lgdt [gdtr64]
 	jmp 0x8:main64
 
@@ -52,7 +60,8 @@ main64:
 	mov rsp, r14
 	mov ebp, esp
 
-	; Enabling SSE
+	; Enabling SSE : CPU extension for fast-floating
+	; 				 and vector operations.
 	mov rax, cr4
 	or ax, 3 << 9		;set CR4.OSFXSR and CR4.OSXMMEXCPT at the same time
 	mov cr4, rax
