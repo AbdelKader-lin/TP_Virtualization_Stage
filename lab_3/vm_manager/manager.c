@@ -131,7 +131,7 @@ int vmexit_handler(int exit_reason)
         break;
     case KVM_EXIT_FAIL_ENTRY:
         errx(1, "KVM_EXIT_FAIL_ENTRY: hardware_entry_failure_reason = 0x%llx",
-             (unsigned long long)run->fail_entry.hardware_entry_failure_reason);
+            (unsigned long long)run->fail_entry.hardware_entry_failure_reason);
     case KVM_EXIT_INTERNAL_ERROR:
         errx(1, "KVM_EXIT_INTERNAL_ERROR: suberror = 0x%x", run->internal.suberror);
     case KVM_EXIT_SHUTDOWN:
