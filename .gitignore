@@ -1,0 +1,9 @@
+# Editor swap files
+*.swp
+*.swo
+
+# Extracted from musl.tar.gz by `make` in each lab's vm_src/
+**/vm_src/musl/
+
+# Build artifacts
+**/vm_src/bin/
