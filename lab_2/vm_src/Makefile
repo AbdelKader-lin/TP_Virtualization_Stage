@@ -29,7 +29,7 @@ boot:
 	$(LD) -T $(LINKER_DIR)/boot_linker.ld $(SRC)/boot.o -o $(BIN)/boot 
 	rm $(SRC)/boot.o
 
- musl:
+musl:
 	mkdir -p bin
 	tar -xvf musl.tar.gz &&	mv musl-1.2.4/ musl
 	sed -i '/errno = -r;/d' musl/src/internal/syscall_ret.c

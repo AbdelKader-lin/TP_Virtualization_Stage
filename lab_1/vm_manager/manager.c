@@ -1,6 +1,9 @@
 #include "manager.h"
 
-int kvmfd, vmfd, vcpufd;
+int kvmfd ; // kvm subsys file desc
+int vmfd ; //  on virtual machine file desc
+int vcpufd ; // vCPU file desc
+
 struct kvm_run *run;
 uint8_t *memory;
 int slot_id = 0;
@@ -9,9 +12,18 @@ int slot_id = 0;
  * TODO
  * This Function Creates Virtual Machine File Descriptor.
  */
-int create_vm(void)
-{
-    int ret = -1;
+int create_vm( void ) {
+    int ret = 0;
+
+    kvmfd = open( "/dev/kvm" , O_RDWR ) ; // obtains a handle to the kvm subsystem
+    if ( kvmfd < 0 ) { // Error in the open function
+        printf("Error in initial file open.\n") ;
+        return -1 ;
+    }
+    vmfd = ioctl( kvmfd , KVM_CREATE_VM , 0 ) ; // Create the VM
+    if ( vmfd < 0 ){
+        ret = -1 ;
+    }
     return ret;
 }
 
@@ -20,14 +32,34 @@ int create_vm(void)
  * This Function Creates Guest Physical Memory Based On Host Virtual Memory
  * And Submits The Memory Area To KVM.
  */
-int create_guest_physical_memory(size_t size)
-{
-    int ret = -1;
-    return ret;
+int create_guest_physical_memory( size_t size ) {
+    int ret = 0 ;
+
+    // First we map the virtual HVA to HPA
+    // void *mmap( void addr[ .length ] , size_t length , int prot , int flags , int fd , off_t offset ) :
+    //      creates a new mapping in the virtual address space of the calling process.  The starting address for the new mapping is specified in addr.  
+    //      The length argument specifies the length of the mapping (which must be greater than 0).
+    
+    // NULL : The kernel chooses the (page-aligned) address at which to create the mapping
+    void* hva = mmap( NULL , size , PROT_READ | PROT_WRITE , MAP_ANONYMOUS | MAP_PRIVATE , -1 , 0 ) ;
+    if ( hva == MAP_FAILED ){ // Error check
+        ret = -1 ;
+    }
+    memory = hva ; 
+
+    // Fill in structure's fields
+    struct kvm_userspace_memory_region gpa ;
+    gpa.memory_size = size ;
+    gpa.slot = slot_id ;
+    gpa.userspace_addr = (uint64_t)hva ;
+    gpa.guest_phys_addr = 0 ;
+    gpa.flags = 0 ;
+    ret = ioctl ( vmfd , KVM_SET_USER_MEMORY_REGION , &gpa ) ;
+
+    return ret ;
 }
 
-int create_bootstrap()
-{
+int create_bootstrap() {
     struct kvm_sregs sregs;
     size_t mmap_size;
     int ret = -1;
@@ -70,17 +102,20 @@ int create_bootstrap()
  * TODO
  * This Function Updates vCPU Registers And Runs It.
  */
-int launch_vm()
-{
+int launch_vm(){
     int ret;
     struct kvm_regs regs;
-    ioctl(vcpufd, KVM_GET_REGS, &regs);
+    ioctl( vcpufd , KVM_GET_REGS , &regs ) ;
 
     /* Update Of The vCPU Registers - RAX, RBX and RIP */
     regs.rflags = 2;
-    // regs.rax = ...;
-    // regs.rbx = ...;
-    // regs.rip = ...;
+    regs.rax = 4 ; // Accumulator register (AX).
+    regs.rbx = 2 ; // Base register (BX) : Used as a pointer to data (located in segment register DS, when in segmented mode).
+
+    /*  We can use 0x1000 because the first page sometimes is reserved / used for other stuff (like vectors, structures, etc.), 
+        but not always. We should then change the for loop in the code that loads the VM.
+    */
+    regs.rip = 0 ; // 0x1000 ; // Index Pointer : Holds the offset of the next instruction (code is loaded at 0x0000)
 
     ret = ioctl(vcpufd, KVM_SET_REGS, &regs);
     if (ret == -1)
