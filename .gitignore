@@ -7,3 +7,9 @@
 
 # Build artifacts
 **/vm_src/bin/
+
+# Run output written by the guest app
+**/vm_src/ay_caramba
+
+# Package files
+*.gpg

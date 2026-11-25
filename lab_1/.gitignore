@@ -1,5 +1,0 @@
-# Build artifacts
-vm_src/bin/
-
-# Package files
-*.gpg

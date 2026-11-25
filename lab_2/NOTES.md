@@ -119,7 +119,7 @@ $ make alll && make run
 ### 🔹 Task 2.2: Identify Operations
 **Question:** Identify and detail these operations
 - Reference: [Linux System Call Table](https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/)
-![alt text](image.png)
+![x86_64 system call table (read, write, open, close)](syscall_table.png)
 **Answer:**
 
     Operations :
@@ -174,3 +174,10 @@ $ make alll && make run
 
 ### Additional Notes
 
+
+**Run result:** running the VM creates `vm_src/ay_caramba`, which contains:
+
+```text
+Hello World !!!
+Bye Bye !!!
+```
