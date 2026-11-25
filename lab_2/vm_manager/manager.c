@@ -10,11 +10,13 @@ int create_vm( void ) {
 
     /* Getting the KVM File Descriptor */
     kvmfd = open( "/dev/kvm" , O_RDWR ) ;
-    if ( kvmfd == -1 )
+    if ( kvmfd == -1 ){
         err( 1 , "/dev/kvm" ) ;
+    }
     ret = ioctl( kvmfd , KVM_GET_API_VERSION , NULL ) ;
-    if ( ret == -1 )
+    if ( ret == -1 ){
         err( 1 , "KVM_GET_API_VERSION" ) ;
+    }
 
     /* Creating A VM Structure */
     vmfd = ioctl( kvmfd , KVM_CREATE_VM , ( unsigned long ) 0 ) ;

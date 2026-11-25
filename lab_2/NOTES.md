@@ -3,7 +3,7 @@
 
 ---
 
-### 📋 Lab Overview
+### Lab Overview
 
 **Objective:** Run a simple Linux C application inside a micro virtual machine
 
@@ -119,12 +119,11 @@ $ make alll && make run
 ### 🔹 Task 2.2: Identify Operations
 **Question:** Identify and detail these operations
 - Reference: [Linux System Call Table](https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/)
-
+![alt text](image.png)
 **Answer:**
 
     Operations :
 
-        ![alt text](image.png)
 
         1- int fd = open( FILENAME , O_RDWR | O_CREAT , 0777 ) :
             syscall #2
@@ -173,5 +172,5 @@ $ make alll && make run
 **---------------------------------------------------------------------**
 
 
-### 📝 Additional Notes
+### Additional Notes
 
